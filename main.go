@@ -16,7 +16,7 @@ func main() {
 	// tos.AddHeader()
 
 	go servers.checkLoop()
-	// runWeb()
+	runWeb()
 	// go runSpa()
-	runSpa()
+	//runSpa()
 }
