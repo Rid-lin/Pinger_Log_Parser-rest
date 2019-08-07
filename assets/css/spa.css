@@ -1,0 +1,97 @@
+*{
+    margin: 0px;
+    padding: 0px;
+}
+
+body{
+       background-color: #f1f1f1
+ 
+}
+
+header {
+    width: 100%;
+    height: 50px;
+    background: #42a3dbb0;
+    
+}
+
+#logo{
+    font-size: 3em;
+    font-style: italic;   
+    font-family: Georgia, 'Times New Roman', Times, serif
+}
+
+#nameTable{
+    text-align: center;
+}
+
+
+table {
+    empty-cells: show;
+    margin: auto;
+    width: 96%;
+    border-collapse: separate;
+    border-radius: 5px;
+    background-color: #aadcdca3;
+    box-shadow: black 8px 7px 9px 1px;
+}
+
+table td, th {
+    border-radius: 5px;
+    border: 1px solid black;
+    font-size: 0.7em;
+}
+
+@media (min-width: 1367px) and (max-width: 1500px) {
+    table td, th {
+    	font-size: 0.9em;
+        }
+    }
+
+@media (min-width: 1501px) {
+    table td, th {
+    	font-size: 1.1em;
+        }
+    }
+
+
+.maintable a{
+    color: #0c0229;
+}
+
+.bggreen {
+    background-color: green;
+    text-align: center;
+}
+
+.bgred {
+    text-align: center;
+    background-color: red;
+}
+
+.bgyellow {
+    text-align: center;
+    background-color: yellow;
+}
+
+.bgyellowgreen {
+    text-align: center;
+    background-color: yellowgreen;
+}
+
+.bgpalevioletred {
+    text-align: center;
+    background-color: palevioletred;
+}
+
+.bggrey {
+    text-align: center;
+    background-color: grey;
+}
+
+.legend {
+    empty-cells: show;
+    margin: auto;
+    align-self: center;
+    width: 50%;
+}
