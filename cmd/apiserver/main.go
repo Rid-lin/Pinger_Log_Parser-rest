@@ -20,7 +20,7 @@ func main() {
 
 	config := apiserver.NewConfig()
 	err := config.GetConf(configPath)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 	}
 
