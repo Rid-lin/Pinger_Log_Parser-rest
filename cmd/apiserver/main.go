@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 
+	"github.com/BurntSushi/toml"
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/apiserver"
 )
 
@@ -12,14 +13,14 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "configs/apiserver.json", "path to config file")
+	flag.StringVar(&configPath, "config-path", "configs/apiserver.toml", "path to config file")
 }
 
 func main() {
 	flag.Parse()
 
 	config := apiserver.NewConfig()
-	err := config.GetConf(configPath)
+	_, err := toml.DecodeFile(configPath, config)
 	if err != nil {
 		log.Fatal(err)
 	}

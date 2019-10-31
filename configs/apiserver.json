@@ -1,6 +1,6 @@
 {
     "bind_addr": ":8080",
-    "FileLog": "",
+    "log_level": "error",
     "NumberOfCheck": 3,
     "TimeOutSleep": 8,
     "ServersList": {
