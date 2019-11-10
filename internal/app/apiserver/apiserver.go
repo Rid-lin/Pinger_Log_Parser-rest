@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store/sqlitestore"
+	"github.com/gorilla/sessions"
 )
 
 // Start ...
@@ -17,7 +18,8 @@ func Start(config *Config) error {
 	defer db.Close()
 
 	store := sqlitestore.New(db)
-	srv := newServer(store)
+	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
+	srv := newServer(store, sessionStore)
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }

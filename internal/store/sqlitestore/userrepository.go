@@ -29,10 +29,15 @@ func (r *UserRepository) Create(u *model.User) error {
 		panic(err)
 	}
 	defer stmt.Close()
-	_, err2 := stmt.Exec(u.Email, u.EncryptedPassword)
+	result, err2 := stmt.Exec(u.Email, u.EncryptedPassword)
 	if err2 != nil {
 		return err2
 	}
+	id64, err3 := result.LastInsertId()
+	if err3 != nil {
+		return err3
+	}
+	u.ID = int(id64)
 
 	// return r.store.db.QueryRow(
 	// 	"INSERT INTO users (email, encrypted_password) VALUES (?, ?)",
