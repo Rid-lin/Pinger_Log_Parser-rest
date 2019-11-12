@@ -9,3 +9,13 @@ func TestUser(t *testing.T) *User {
 		Password: "password",
 	}
 }
+
+//TestDevice ...
+func TestDevice(t *testing.T) *Device {
+	return &Device{
+		IP:          "10.61.129.144",
+		Place:       "ЧНГКМ ВЗИС73км - Серврная1",
+		Description: "Сервер 1С",
+		MethodCheck: "ping",
+	}
+}
