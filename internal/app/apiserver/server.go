@@ -62,6 +62,8 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST") // Create Users
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
+	s.router.HandleFunc("/getdevices", s.handleGetDevices()).Methods("GET")
+
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
@@ -99,8 +101,17 @@ func (s *server) handleIndex() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(tos.ServersList)
-		devices := make(map[int](*model.Device))
-		devices, err := s.store.Device().GetAll() //Trancive "null" because not yet implemement
+		// TODO тут нужно отдать index.html как статичную страницу, в которой будет логика по дальнейшей работе приложения
+	}
+}
+
+//handleGetDevices Return list devices as JSON and/or Error
+func (s *server) handleGetDevices() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// w.Header().Set("Content-Type", "application/json")
+		// json.NewEncoder(w).Encode(tos.ServersList)
+		var devices [](*model.Device)
+		devices, err := s.store.Device().GetAllAsList() //Trancive "null" because not yet implemement
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return

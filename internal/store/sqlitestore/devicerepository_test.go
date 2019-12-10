@@ -81,8 +81,28 @@ func TestDeviceRepository_GetAll(t *testing.T) {
 	err2 := s.Device().Create(d2)
 	assert.NoError(t, err2)
 
-	devices, err := s.Device().GetAll()
+	devices, err := s.Device().GetAllAsMap()
 	assert.NoError(t, err)
 	assert.NotNil(t, devices)
 
+}
+
+//GetAllAsList ..
+func TestDeviceRepository_GetAllAsList(t *testing.T) {
+	db, teardown := sqlitestore.TestDB(t, databaseURL)
+	defer teardown("devices")
+
+	s := sqlitestore.New(db)
+
+	d1 := model.TestDevice(t)
+	err1 := s.Device().Create(d1)
+	assert.NoError(t, err1)
+
+	d2 := model.TestDevice(t)
+	err2 := s.Device().Create(d2)
+	assert.NoError(t, err2)
+
+	devices, err := s.Device().GetAllAsList()
+	assert.NoError(t, err)
+	assert.NotNil(t, devices)
 }

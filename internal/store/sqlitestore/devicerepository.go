@@ -9,7 +9,8 @@ import (
 
 //DeviceRepository ..
 type DeviceRepository struct {
-	store *Store
+	store   *Store
+	devices map[int]*model.Device
 }
 
 //Create ..
@@ -119,8 +120,8 @@ func (r *DeviceRepository) Update(ip string, dNew *model.Device) error {
 	return nil
 }
 
-//GetAll ..
-func (r *DeviceRepository) GetAll() (map[int](*model.Device), error) {
+//GetAllAsMap ..
+func (r *DeviceRepository) GetAllAsMap() (map[int](*model.Device), error) {
 	d := &model.Device{}
 	// query
 	rows, err := r.store.db.Query("SELECT * FROM devices")
@@ -140,4 +141,27 @@ func (r *DeviceRepository) GetAll() (map[int](*model.Device), error) {
 
 	rows.Close() //good habit to close
 	return devices, nil
+}
+
+//GetAllAsList ..
+func (r *DeviceRepository) GetAllAsList() ([](*model.Device), error) {
+	d := &model.Device{}
+	// query
+	rows, err := r.store.db.Query("SELECT * FROM devices")
+	if err != nil {
+		return nil, err
+	}
+
+	var devicesList [](*model.Device)
+
+	for rows.Next() {
+		err = rows.Scan(&d.ID, &d.IP, &d.Place, &d.Description, &d.MethodCheck)
+		if err != nil {
+			return nil, err
+		}
+		devicesList = append(devicesList, d)
+	}
+
+	rows.Close() //good habit to close
+	return devicesList, nil
 }

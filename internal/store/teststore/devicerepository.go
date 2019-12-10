@@ -71,9 +71,9 @@ func (r *DeviceRepository) Update(ip string, dNew *model.Device) error {
 	return nil
 }
 
-//GetAll ..
-func (r *DeviceRepository) GetAll(sortBy string) (map[interface{}](*model.Device), error) {
-	devices := make(map[interface{}](*model.Device))
+//GetAllAsMap ..
+func (r *DeviceRepository) GetAllAsMap() (map[int](*model.Device), error) {
+	devices := make(map[int](*model.Device))
 
 	for id, row := range r.devices {
 		devices[id] = row

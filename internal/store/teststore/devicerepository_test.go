@@ -66,7 +66,7 @@ func TestDeviceRepository_GetAll(t *testing.T) {
 	err2 := s.Device().Create(d2)
 	assert.NoError(t, err2)
 
-	devices, err := s.Device().GetAll("")
+	devices, err := s.Device().GetAllAsMap()
 	assert.NoError(t, err)
 	assert.NotNil(t, devices)
 
