@@ -100,14 +100,12 @@ func (s *server) handleIndex() http.HandlerFunc {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(tos.ServersList)
 		devices := make(map[int](*model.Device))
-		devices, err := s.store.Device().GetAll()
+		devices, err := s.store.Device().GetAll() //Trancive "null" because not yet implemement
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
-		} else {
-			s.respond(w, r, http.StatusOK, devices)
 		}
-
+		s.respond(w, r, http.StatusOK, devices)
 	}
 }
 
