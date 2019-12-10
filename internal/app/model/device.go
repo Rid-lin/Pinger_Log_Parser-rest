@@ -19,6 +19,7 @@ func (d *Device) Validate() error {
 	return validation.ValidateStruct(
 		d,
 		validation.Field(&d.IP, validation.Required, is.IPv4),
+		validation.Field(&d.Place, validation.Required),
 	)
 }
 

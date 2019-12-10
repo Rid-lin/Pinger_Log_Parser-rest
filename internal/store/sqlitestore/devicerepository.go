@@ -120,7 +120,24 @@ func (r *DeviceRepository) Update(ip string, dNew *model.Device) error {
 }
 
 //GetAll ..
-func (r *DeviceRepository) GetAll(sortBy string) (map[interface{}](*model.Device), error) {
-	//...
-	return nil, nil
+func (r *DeviceRepository) GetAll() (map[int](*model.Device), error) {
+	d := &model.Device{}
+	// query
+	rows, err := r.store.db.Query("SELECT * FROM devices")
+	if err != nil {
+		return nil, err
+	}
+
+	devices := make(map[int](*model.Device))
+
+	for rows.Next() {
+		err = rows.Scan(&d.ID, &d.IP, &d.Place, &d.Description, &d.MethodCheck)
+		if err != nil {
+			return nil, err
+		}
+		devices[d.ID] = d
+	}
+
+	rows.Close() //good habit to close
+	return devices, nil
 }

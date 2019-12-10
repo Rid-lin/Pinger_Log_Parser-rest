@@ -99,6 +99,15 @@ func (s *server) handleIndex() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(tos.ServersList)
+		devices := make(map[int](*model.Device))
+		devices, err := s.store.Device().GetAll()
+		if err != nil {
+			s.error(w, r, http.StatusInternalServerError, err)
+			return
+		} else {
+			s.respond(w, r, http.StatusOK, devices)
+		}
+
 	}
 }
 
@@ -181,7 +190,11 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 			s.error(w, r, http.StatusInternalServerError, err)
 		}
 
+		// if _, ok := session.Values["user_id"]; !ok {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// }
 		session.Values["user_id"] = u.ID
+
 		if err := s.sessionStore.Save(r, w, session); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 		}

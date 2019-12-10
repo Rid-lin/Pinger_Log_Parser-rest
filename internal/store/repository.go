@@ -16,5 +16,5 @@ type DeviceRepository interface {
 	FindIDByIP(string) (int, error)
 	DeleteByIP(string) error
 	Update(string, *model.Device) error
-	GetAll(string) (map[interface{}](*model.Device), error)
+	GetAll() (map[int](*model.Device), error)
 }

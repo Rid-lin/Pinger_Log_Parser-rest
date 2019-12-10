@@ -1,7 +1,7 @@
 CREATE TABLE "devices" (
 	"id"	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	"ip"	TEXT NOT NULL UNIQUE,
-	"place"	TEXT NOT NULL UNIQUE,
+	"ip"	TEXT NOT NULL,
+	"place"	TEXT NOT NULL,
 	"description"	TEXT NOT NULL,
-	"methodcheck"	TEXT NOT NULL DEFAULT 'ping' UNIQUE
+	"methodcheck"	TEXT NOT NULL DEFAULT 'ping'
 );

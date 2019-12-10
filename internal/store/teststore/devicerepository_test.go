@@ -1,30 +1,24 @@
-package sqlitestore_test
+package teststore_test
 
 import (
 	"testing"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store"
-	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store/sqlitestore"
+	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store/teststore"
 	"github.com/stretchr/testify/assert"
 	// _ "github.com/mattn/go-sqlite3" // ..
 )
 
 func TestDeviceRepository_Create(t *testing.T) {
-	db, teardown := sqlitestore.TestDB(t, databaseURL)
-	defer teardown("devices")
-
-	s := sqlitestore.New(db)
+	s := teststore.New()
 	u := model.TestDevice(t)
 	assert.NoError(t, s.Device().Create(u))
 	assert.NotNil(t, u)
 }
 
-func TestDeviceRepository_FindByID(t *testing.T) {
-	db, teardown := sqlitestore.TestDB(t, databaseURL)
-	defer teardown("devices")
-
-	s := sqlitestore.New(db)
+func TestDeviceRepository_FindByIP(t *testing.T) {
+	s := teststore.New()
 	u1 := model.TestDevice(t)
 	_, err := s.Device().FindByIP(u1.IP)
 	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
@@ -37,10 +31,7 @@ func TestDeviceRepository_FindByID(t *testing.T) {
 }
 
 func TestDeviceRepository_FindIDByIP(t *testing.T) {
-	db, teardown := sqlitestore.TestDB(t, databaseURL)
-	defer teardown("devices")
-
-	s := sqlitestore.New(db)
+	s := teststore.New()
 	u1 := model.TestDevice(t)
 	s.Device().Create(u1)
 	u2, err := s.Device().FindIDByIP(u1.IP)
@@ -50,10 +41,7 @@ func TestDeviceRepository_FindIDByIP(t *testing.T) {
 }
 
 func TestDeviceRepository_DeleteByIP(t *testing.T) {
-	db, teardown := sqlitestore.TestDB(t, databaseURL)
-	defer teardown("devices")
-
-	s := sqlitestore.New(db)
+	s := teststore.New()
 	d1 := model.TestDevice(t)
 	err := s.Device().Create(d1)
 	assert.NoError(t, err)
@@ -68,10 +56,7 @@ func TestDeviceRepository_DeleteByIP(t *testing.T) {
 }
 
 func TestDeviceRepository_GetAll(t *testing.T) {
-	db, teardown := sqlitestore.TestDB(t, databaseURL)
-	defer teardown("devices")
-
-	s := sqlitestore.New(db)
+	s := teststore.New()
 
 	d1 := model.TestDevice(t)
 	err1 := s.Device().Create(d1)
@@ -81,7 +66,7 @@ func TestDeviceRepository_GetAll(t *testing.T) {
 	err2 := s.Device().Create(d2)
 	assert.NoError(t, err2)
 
-	devices, err := s.Device().GetAll()
+	devices, err := s.Device().GetAll("")
 	assert.NoError(t, err)
 	assert.NotNil(t, devices)
 
