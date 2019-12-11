@@ -102,8 +102,8 @@ func (r *DeviceRepository) DeleteByIP(ip string) error {
 	return nil
 }
 
-//Update ..
-func (r *DeviceRepository) Update(ip string, dNew *model.Device) error {
+//UpdateByIP ..
+func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
 	id, err := r.FindIDByIP(ip)
 	if err != nil {
 		return err

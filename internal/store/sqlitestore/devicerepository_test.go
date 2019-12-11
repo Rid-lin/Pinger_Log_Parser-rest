@@ -20,7 +20,7 @@ func TestDeviceRepository_Create(t *testing.T) {
 	assert.NotNil(t, u)
 }
 
-func TestDeviceRepository_FindByID(t *testing.T) {
+func TestDeviceRepository_FindByIP(t *testing.T) {
 	db, teardown := sqlitestore.TestDB(t, databaseURL)
 	defer teardown("devices")
 
