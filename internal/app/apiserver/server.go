@@ -63,6 +63,12 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
 	s.router.HandleFunc("/getdevices", s.handleGetDevices()).Methods("GET")
+	s.router.HandleFunc("/updatedevices", s.handleUpdateDevices()).Methods("PUT")
+
+	s.router.HandleFunc("/editdevice", s.handleGetDevice()).Methods("GET")
+	s.router.HandleFunc("/editdevice", s.handleCreateDevice()).Methods("POST")
+	s.router.HandleFunc("/editdevice", s.handleUpdateDevice()).Methods("PUT")
+	s.router.HandleFunc("/editdevice", s.handleDeleteDevice()).Methods("DELETE")
 
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
@@ -108,15 +114,74 @@ func (s *server) handleIndex() http.HandlerFunc {
 //handleGetDevices Return list devices as JSON and/or Error
 func (s *server) handleGetDevices() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// w.Header().Set("Content-Type", "application/json")
-		// json.NewEncoder(w).Encode(tos.ServersList)
 		var devices [](*model.Device)
-		devices, err := s.store.Device().GetAllAsList() //Trancive "null" because not yet implemement
+		devices, err := s.store.Device().GetAllAsList()
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
 		s.respond(w, r, http.StatusOK, devices)
+	}
+}
+
+func (s *server) handleUpdateDevices() http.HandlerFunc {
+	// TODO Написать функцию, которая опрашивает все devices и и обновляет информацию о доступности
+	return s.handleGetDevices()
+}
+
+func (s *server) handleGetDevice() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO Написать функцию которая отдаёт информацию о конкретном устройстве в JSON
+
+		// var devices [](*model.Device)
+		// devices, err := s.store.Device().GetAllAsList()
+		// if err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// s.respond(w, r, http.StatusOK, devices)
+	}
+}
+
+func (s *server) handleCreateDevice() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO Написать функцию которая создаёт устройство при получении информации в JSON
+
+		// var devices [](*model.Device)
+		// devices, err := s.store.Device().GetAllAsList()
+		// if err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// s.respond(w, r, http.StatusOK, devices)
+	}
+}
+
+func (s *server) handleUpdateDevice() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO Написать функцию которая обновляет информацию об устройстве при получении информации в JSON
+
+		// var devices [](*model.Device)
+		// devices, err := s.store.Device().GetAllAsList()
+		// if err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// s.respond(w, r, http.StatusOK, devices)
+	}
+}
+
+func (s *server) handleDeleteDevice() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO Написать функцию которая удаляет устройство при получении информации в JSON
+
+		// var devices [](*model.Device)
+		// devices, err := s.store.Device().GetAllAsList()
+		// if err != nil {
+		// 	s.error(w, r, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// s.respond(w, r, http.StatusOK, devices)
 	}
 }
 
@@ -219,6 +284,7 @@ func (s *server) error(w http.ResponseWriter, r *http.Request, code int, err err
 func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	if data != nil {
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(data)
 	}
 }
