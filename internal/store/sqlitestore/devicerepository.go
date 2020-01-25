@@ -2,6 +2,7 @@ package sqlitestore
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store"
@@ -102,7 +103,47 @@ func (r *DeviceRepository) DeleteByIP(ip string) error {
 	return nil
 }
 
-//UpdateByIP ..
+//Delete ..
+func (r *DeviceRepository) Delete(d *model.Device) error {
+	if d == nil || d.IP == "0" || d.IP == "" || d.ID == 0 {
+		return errors.New("Invalid input data")
+	}
+
+	delitemSQL := "DELETE FROM devices WHERE id = ?"
+
+	stmt, err := r.store.db.Prepare(delitemSQL)
+	if err != nil {
+		panic(err)
+	}
+	defer stmt.Close()
+	_, err2 := stmt.Exec(d.ID)
+	if err2 != nil {
+		return err2
+	}
+
+	return nil
+}
+
+//Update ..
+func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
+	if err := dNew.Validate(); err != nil {
+		return err
+	} else if dNew.ID == dOld.ID {
+		return errors.New("Invalid input data")
+	}
+
+	// обновляем строку с id=
+	_, err := r.store.db.Exec(
+		"UPDATE devices SET (ip = $2, place = $3, description = $4, methodcheck = $5) WHERE id = $1",
+		dNew.ID, dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//UpdateByIP ...
 func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
 	id, err := r.FindIDByIP(ip)
 	if err != nil {
