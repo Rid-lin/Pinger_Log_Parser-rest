@@ -1,5 +1,5 @@
 package checkmethods
 
-func pingWin(string) (string, error) {
-	return "", nil
+func pingWin(string) string {
+	return ""
 }

@@ -3,7 +3,7 @@ package checkmethods
 import "runtime"
 
 //Ping ...
-func Ping(ip string) (string, error) {
+func Ping(ip string) string {
 	os := runtime.GOOS
 	switch os {
 	case "windows":

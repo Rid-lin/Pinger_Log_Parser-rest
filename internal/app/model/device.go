@@ -1,9 +1,11 @@
 package model
 
 import (
+	check "github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/checkmethods" //.
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/checkmethods"
+	"log"
+	"os"
 )
 
 //Device ...
@@ -36,14 +38,34 @@ func (d *Device) BeforeCreate() error {
 	return nil
 }
 
+// CheckNLogStatus ...
+func (d *Device) CheckNLogStatus(patchWorkLogs string) {
+	// Проверка статуса одного устройства
+	status := d.CheckStatus()
+	d.LogStatus(status, patchWorkLogs)
+}
+
 // CheckStatus ...
-func (d *Device) CheckStatus() (string, error) {
-	//TODO Проверка статуса одного устройства
-	//
+func (d *Device) CheckStatus() string {
 	switch d.MethodCheck {
 	case "ping":
-		Ping(d.IP)
+		check.Ping(d.IP)
+	default:
+		check.Ping(d.IP)
 	}
 
-	return "", nil
+	return ""
+}
+
+// LogStatus ...
+func (d *Device) LogStatus(status, patchWorkLogs string) {
+	f, err := os.OpenFile(patchWorkLogs, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	if _, err = f.WriteString(status); err != nil {
+		log.Fatal(err)
+	}
 }
