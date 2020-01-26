@@ -8,6 +8,9 @@ import (
 	"github.com/gorilla/sessions"
 )
 
+//LogPatch - patch of logs checks status devices
+var LogPatch string
+
 // Start ...
 func Start(config *Config) error {
 	db, err := newDB(config.DatabaseURL)
@@ -20,6 +23,7 @@ func Start(config *Config) error {
 	store := sqlitestore.New(db)
 	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
 	srv := newServer(store, sessionStore)
+	LogPatch = config.LogPatch
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }
