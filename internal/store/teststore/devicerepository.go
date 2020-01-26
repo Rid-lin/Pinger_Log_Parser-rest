@@ -1,6 +1,8 @@
 package teststore
 
 import (
+	"errors"
+
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/store"
 )
@@ -59,8 +61,28 @@ func (r *DeviceRepository) DeleteByIP(ip string) error {
 	return store.ErrRecordNotFound
 }
 
+//Delete ..
+func (r *DeviceRepository) Delete(d *model.Device) error {
+	delete(r.devices, d.ID)
+
+	return store.ErrRecordNotFound
+}
+
 //Update ..
-func (r *DeviceRepository) Update(ip string, dNew *model.Device) error {
+func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
+	if err := dNew.Validate(); err != nil {
+		return err
+	} else if dNew.ID == dOld.ID {
+		return errors.New("Invalid input data")
+	}
+
+	r.devices[dOld.ID] = dNew
+
+	return nil
+}
+
+//UpdateByIP ..
+func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
 	id, err := r.FindIDByIP(ip)
 	if err != nil {
 		return err
@@ -80,4 +102,15 @@ func (r *DeviceRepository) GetAllAsMap() (map[int](*model.Device), error) {
 	}
 
 	return devices, nil
+}
+
+//GetAllAsList ..
+func (r *DeviceRepository) GetAllAsList() ([](*model.Device), error) {
+	var devicesList [](*model.Device)
+
+	for _, device := range r.devices {
+		devicesList = append(devicesList, device)
+	}
+
+	return devicesList, nil
 }
