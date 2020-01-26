@@ -42,13 +42,15 @@ func (d *Device) BeforeCreate() error {
 func (d *Device) CheckNLogStatus(patchWorkLogs string) {
 	// Проверка статуса одного устройства
 	status := d.CheckStatus()
+	// Логирование результата
 	d.LogStatus(status, patchWorkLogs)
 }
 
 // CheckStatus ...
 func (d *Device) CheckStatus() string {
+	// В зависимости от указанного метода проверки вызываем нужный
 	switch d.MethodCheck {
-	case "ping":
+	case "ping": // пока что только пинг
 		check.Ping(d.IP)
 	default:
 		check.Ping(d.IP)
@@ -57,7 +59,7 @@ func (d *Device) CheckStatus() string {
 	return ""
 }
 
-// LogStatus ...
+// LogStatus добавляет полученную строку "status" в файл находящийся по пути "patchWorkLogs"
 func (d *Device) LogStatus(status, patchWorkLogs string) {
 	f, err := os.OpenFile(patchWorkLogs, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
