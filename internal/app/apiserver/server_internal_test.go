@@ -150,3 +150,40 @@ func TestServer_HandleSessionsCreate(t *testing.T) {
 	}
 
 }
+
+func TestServer_HandleGetDevices(t *testing.T) {
+	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")))
+	testCases := []struct {
+		name        string
+		payload     interface{}
+		excpectCode int
+	}{
+		{
+			name:        "valid",
+			excpectCode: http.StatusOK,
+		},
+		{
+			name:        "invalid payload",
+			payload:     "invalid",
+			excpectCode: http.StatusBadRequest,
+		},
+		{
+			name: "invalid params",
+			payload: map[string]string{
+				"email": "invalid",
+			},
+			excpectCode: http.StatusUnprocessableEntity,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+			b := &bytes.Buffer{}
+			json.NewEncoder(b).Encode(tc.payload)
+			req, _ := http.NewRequest(http.MethodGet, "/getdevices", b)
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.excpectCode, rec.Code)
+		})
+	}
+}
