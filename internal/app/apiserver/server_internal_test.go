@@ -121,17 +121,18 @@ func TestServer_HandleSessionsCreate(t *testing.T) {
 			excpectCode: http.StatusBadRequest,
 		},
 		{
-			name: "invalid params",
+			name: "invalid params - password",
 			payload: map[string]string{
-				"email": "invalid",
+				"email":    u.Email,
+				"password": "invalid",
 			},
 			excpectCode: http.StatusUnauthorized,
 		},
 		{
-			name: "invalid params",
+			name: "invalid params - Email",
 			payload: map[string]string{
-				"email":    u.Email,
-				"password": "invalid",
+				"email":    "invalid",
+				"password": u.Password,
 			},
 			excpectCode: http.StatusUnauthorized,
 		},
