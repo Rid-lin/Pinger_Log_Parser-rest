@@ -16,13 +16,13 @@ func pingWin(ip string) string {
 	tm := time.Now().Format("15:04:05")
 	out, err := exec.Command("c:\\Windows\\System32\\ping.exe ", ip).Output()
 	if err != nil {
-		pingTime = "FAIL"
+		pingTime = "down"
 	} else {
 		stringDecodeOut := cp866ToUTF8(out)
 		pingTime = parseStringToTime(stringDecodeOut)
 	}
 
-	result := fmt.Sprintf("%s %s %s", tm, ip, pingTime)
+	result := fmt.Sprintf("%s,%s,%s", tm, ip, pingTime)
 
 	return result
 }
@@ -55,6 +55,6 @@ func parseStringToTime(stringDecodeOut string) string {
 
 		return pingTime
 	}
-	return "FAIL"
+	return "down"
 
 }
