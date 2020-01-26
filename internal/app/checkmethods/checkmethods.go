@@ -4,6 +4,7 @@ import "runtime"
 
 //Ping ...
 func Ping(ip string) string {
+	// Выбор функции которая соответствует текущей ОС
 	os := runtime.GOOS
 	switch os {
 	case "windows":
