@@ -2,3 +2,6 @@
 *debug*
 *.exe
 *.bat
+.vscode.7z
+.vscode/tasks.json
+.gitignore
