@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//TestUser_Validate ..
+//TestDevice_Validate ..
 func TestDevice_Validate(t *testing.T) {
 	testCases := []struct {
 		name    string
@@ -63,3 +63,36 @@ func TestDevice_Validate(t *testing.T) {
 		})
 	}
 }
+
+// func TestDevice_CheckNLogStatus(t *testing.T) {
+// 	d := model.TestDevice(t)
+// 	testCases := []struct {
+// 		name    string
+// 		patch   string
+// 		isValid bool
+// 	}{
+// 		{
+// 			name:    "valid",
+// 			patch:   "logs",
+// 			isValid: true,
+// 		},
+// 	}
+
+// 	for _, tc := range testCases {
+// 		t.Run(tc.name, func(t *testing.T) {
+// 			if tc.isValid {
+// 				var err error
+// 				d.CheckNLogStatus(tc.patch)
+// 				if (os.IsNotExist(tc.patch)) {
+// 					err = errors.New("File not exist")
+// 				}
+// 				assert.NoError(t)
+// 			} else {
+// 				assert.Error(t, d.CheckNLogStatus(tc.patch))
+// 			}
+// 		})
+// 	}
+
+// 	status := d.CheckStatus()
+// 	d.LogStatus(status, patch)
+// }
