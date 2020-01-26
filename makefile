@@ -8,4 +8,10 @@ build:
 test:
 	go test -v -race -timeout 30s ./...
 
+
+.PHONY :run
+
+run: test build
+	.\apiserver.exe
+	
 .DUFAULT_GOAL := build
