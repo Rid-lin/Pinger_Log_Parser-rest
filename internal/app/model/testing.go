@@ -19,3 +19,13 @@ func TestDevice(t *testing.T) *Device {
 		MethodCheck: "ping",
 	}
 }
+
+//TestDevice2 ...
+func TestDevice2(t *testing.T) *Device {
+	return &Device{
+		IP:          "10.61.129.142",
+		Place:       "ЧНГКМ ВЗИС73км - Серврная2",
+		Description: "Сервер 2С",
+		MethodCheck: "ping",
+	}
+}

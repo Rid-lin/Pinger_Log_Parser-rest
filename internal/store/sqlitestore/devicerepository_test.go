@@ -1,7 +1,6 @@
 package sqlitestore_test
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
@@ -91,18 +90,47 @@ func TestDeviceRepository_Update(t *testing.T) {
 	defer teardown("devices")
 
 	s := sqlitestore.New(db)
+
 	d := model.TestDevice(t)
+	s.Device().Create(d)
+
 	err := s.Device().Create(d)
 	assert.NoError(t, err)
 	assert.NotNil(t, d)
-	d2 := model.TestDevice(t)
+
+	d2 := model.TestDevice2(t)
+	s.Device().Create(d2)
+
 	err2 := s.Device().Update(d, d2)
 	assert.NoError(t, err2)
-	var err3 error
-	if d != d2 {
-		err3 = errors.New("Update method don't work")
-	}
+
+	d3, err3 := s.Device().FindByIP(d2.IP)
+
 	assert.NoError(t, err3)
+	assert.NotNil(t, d3)
+}
+
+func TestDeviceRepository_UpdateByIP(t *testing.T) {
+	db, teardown := sqlitestore.TestDB(t, databaseURL)
+	defer teardown("devices")
+
+	s := sqlitestore.New(db)
+
+	d := model.TestDevice(t)
+	err := s.Device().Create(d)
+
+	assert.NoError(t, err)
+	assert.NotNil(t, d)
+
+	d2 := model.TestDevice2(t)
+	s.Device().Create(d2)
+
+	err2 := s.Device().UpdateByIP(d.IP, d2)
+	assert.NoError(t, err2)
+
+	d3, err4 := s.Device().FindByIP(d2.IP)
+	assert.NoError(t, err4)
+	assert.NotNil(t, d3)
 
 }
 

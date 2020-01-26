@@ -134,12 +134,11 @@ func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
 
 	// обновляем строку с id=
 	_, err := r.store.db.Exec(
-		"UPDATE devices SET (ip = $2, place = $3, description = $4, methodcheck = $5) WHERE id = $1",
-		dNew.ID, dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck)
+		"UPDATE devices SET ip = ?, place = ?, description = ?, methodcheck = ? WHERE id = ?",
+		dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck, dNew.ID)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -152,8 +151,8 @@ func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
 
 	// обновляем строку с id=1
 	_, err2 := r.store.db.Exec(
-		"UPDATE devices SET (ip = $2, place = $3, description = $4, methodcheck = $5) WHERE id = $1",
-		id, dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck)
+		"UPDATE devices SET ip = ?, place = ?, description = ?, methodcheck = ? WHERE id = ?",
+		dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck, id)
 	if err2 != nil {
 		return err2
 	}
