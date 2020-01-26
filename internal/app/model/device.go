@@ -3,6 +3,7 @@ package model
 import (
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/checkmethods"
 )
 
 //Device ...
@@ -33,4 +34,16 @@ func (d *Device) BeforeCreate() error {
 	// 	d.EncryptedPassword = enc
 	// }
 	return nil
+}
+
+// CheckStatus ...
+func (d *Device) CheckStatus() (string, error) {
+	//TODO Проверка статуса одного устройства
+	//
+	switch d.MethodCheck {
+	case "ping":
+		Ping(d.IP)
+	}
+
+	return "", nil
 }

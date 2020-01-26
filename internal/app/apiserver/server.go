@@ -62,13 +62,13 @@ func (s *server) configureRouter() {
 	s.router.HandleFunc("/users", s.handleUsersCreate()).Methods("POST") // Create Users
 	s.router.HandleFunc("/sessions", s.handleSessionsCreate()).Methods("POST")
 
-	s.router.HandleFunc("/getdevices", s.handleGetDevices()).Methods("GET")
-	s.router.HandleFunc("/updatedevices", s.handleUpdateDevices()).Methods("PUT")
+	s.router.HandleFunc("/getdevices", s.handleGetDevices()).Methods("GET")       // Get All Devices
+	s.router.HandleFunc("/updatedevices", s.handleUpdateDevices()).Methods("PUT") // Run check status all Devices
 
-	s.router.HandleFunc("/editdevice", s.handleGetDevice()).Methods("GET")
-	s.router.HandleFunc("/editdevice", s.handleCreateDevice()).Methods("POST")
-	s.router.HandleFunc("/editdevice", s.handleUpdateDevice()).Methods("PUT")
-	s.router.HandleFunc("/editdevice", s.handleDeleteDevice()).Methods("DELETE")
+	s.router.HandleFunc("/editdevice", s.handleGetDevice()).Methods("GET")       // Get information on one device
+	s.router.HandleFunc("/editdevice", s.handleCreateDevice()).Methods("POST")   // Create Device and him's info
+	s.router.HandleFunc("/editdevice", s.handleUpdateDevice()).Methods("PUT")    // Update info one Device
+	s.router.HandleFunc("/editdevice", s.handleDeleteDevice()).Methods("DELETE") // Delete Device
 
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
@@ -206,7 +206,6 @@ func (s *server) authenticateUser(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, u)))
 	})
-
 }
 
 func (s *server) handleWhoami() http.HandlerFunc {
