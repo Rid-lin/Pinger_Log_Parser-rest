@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"path/filepath"
 	"time"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
@@ -24,8 +25,8 @@ const (
 )
 
 var (
-	errIncorectEmailOrPassword = errors.New("incorrect E-mail or password")
-	errNotAuthenticated        = errors.New("not authenticated")
+	errIncorrectEmailOrPassword = errors.New("incorrect E-mail or password")
+	errNotAuthenticated         = errors.New("not authenticated")
 )
 
 type ctxKey int8
@@ -115,17 +116,21 @@ func (s *server) handleIndex() http.HandlerFunc {
 func (s *server) handleGetDevices() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var devices [](*model.Device)
-		devices, err := s.store.Device().GetAllAsList()
+		devices, err := s.store.Device().GetAllAsList() // FIXME исправить GetAllAsList() на GetStatusOfAllDevices()
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		s.respond(w, r, http.StatusOK, devices)
+		s.respond(w, r, http.StatusOK, devices) // FIXME Выводить не просто список всех устройств, а список со статусами
 	}
 }
 
 func (s *server) handleUpdateDevices() http.HandlerFunc {
-	// TODO Написать функцию, которая опрашивает все devices и и обновляет информацию о доступности
+	// опрашивает все devices и и обновляет информацию о доступности (статус)
+	devicesList, _ := s.store.Device().GetAllAsList()
+	for _, device := range devicesList {
+		device.CheckNLogStatus(getFileFullPatch(LogPatch))
+	}
 	return s.handleGetDevices()
 }
 
@@ -145,6 +150,7 @@ func (s *server) handleGetDevice() http.HandlerFunc {
 
 func (s *server) handleCreateDevice() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var device (*model.Device)
 		// TODO Написать функцию которая создаёт устройство при получении информации в JSON
 
 		// var devices [](*model.Device)
@@ -154,11 +160,14 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 		// 	return
 		// }
 		// s.respond(w, r, http.StatusOK, devices)
+		getFileFullPatch(LogPatch)
+		device.CheckNLogStatus(LogPatch)
 	}
 }
 
 func (s *server) handleUpdateDevice() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var device (*model.Device)
 		// TODO Написать функцию которая обновляет информацию об устройстве при получении информации в JSON
 
 		// var devices [](*model.Device)
@@ -168,6 +177,8 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 		// 	return
 		// }
 		// s.respond(w, r, http.StatusOK, devices)
+		getFileFullPatch(LogPatch)
+		device.CheckNLogStatus(LogPatch)
 	}
 }
 
@@ -255,21 +266,20 @@ func (s *server) handleSessionsCreate() http.HandlerFunc {
 
 		u, err := s.store.User().FindByEmail(req.Email)
 		if err != nil || !u.ComparePassword(req.Password) {
-			s.error(w, r, http.StatusUnauthorized, errIncorectEmailOrPassword)
+			s.error(w, r, http.StatusUnauthorized, errIncorrectEmailOrPassword)
+			return
 		}
 
 		session, err := s.sessionStore.Get(r, sessionName)
 		if err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
-		// if _, ok := session.Values["user_id"]; !ok {
-		// 	s.error(w, r, http.StatusInternalServerError, err)
-		// }
 		session.Values["user_id"] = u.ID
-
 		if err := s.sessionStore.Save(r, w, session); err != nil {
 			s.error(w, r, http.StatusInternalServerError, err)
+			return
 		}
 
 		s.respond(w, r, http.StatusOK, nil)
@@ -286,4 +296,11 @@ func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(data)
 	}
+}
+
+func getFileFullPatch(logPatch string) string {
+	dateNow := time.Now().Format("2006_01_02")
+	filename := dateNow + ".csv"
+	logPatch = filepath.Join(logPatch, filename)
+	return logPatch
 }
