@@ -185,23 +185,22 @@ func (r *DeviceRepository) GetAllAsMap() (map[int](*model.Device), error) {
 
 //GetAllAsList ..
 func (r *DeviceRepository) GetAllAsList() ([](*model.Device), error) {
-	d := &model.Device{}
-	// query
 	rows, err := r.store.db.Query("SELECT * FROM devices")
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	var devicesList [](*model.Device)
 
 	for rows.Next() {
-		err = rows.Scan(&d.ID, &d.IP, &d.Place, &d.Description, &d.MethodCheck)
+		d := &model.Device{}
+		err := rows.Scan(&d.ID, &d.IP, &d.Place, &d.Description, &d.MethodCheck)
 		if err != nil {
 			return nil, err
 		}
 		devicesList = append(devicesList, d)
 	}
 
-	rows.Close() //good habit to close
 	return devicesList, nil
 }
