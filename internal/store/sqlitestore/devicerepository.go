@@ -128,7 +128,7 @@ func (r *DeviceRepository) Delete(d *model.Device) error {
 func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
 	if err := dNew.Validate(); err != nil {
 		return err
-	} else if dNew.ID == dOld.ID {
+	} else if dNew.ID != dOld.ID {
 		return errors.New("Invalid input data")
 	}
 
