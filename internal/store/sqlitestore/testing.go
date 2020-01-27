@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"testing"
-
 	// _ "github.com/mattn/go-sqlite3" // ..
 )
 
@@ -24,13 +23,6 @@ func TestDB(t *testing.T, databaseURL string) (*sql.DB, func(...string)) {
 	return db, func(tables ...string) {
 		if len(tables) > 0 {
 			db.Exec(fmt.Sprintf("DELETE FROM %s", strings.Join(tables, ",")))
-			// query := fmt.Sprintf("DELETE FROM %s", strings.Join(tables, ","))
-			// statement, err := db.Prepare(query)
-			// if err != nil {
-			// 	t.Fatal(err)
-			// }
-			// defer statement.Close()
-			// statement.Exec()
 		}
 		db.Close()
 	}
