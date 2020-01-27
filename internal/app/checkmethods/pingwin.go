@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"golang.org/x/text/encoding/charmap"
+	"golang.org/x/text/transform"
 )
 
 func pingWin(ip string) string {
@@ -18,7 +19,12 @@ func pingWin(ip string) string {
 	if err != nil {
 		pingTime = "down"
 	} else {
-		stringDecodeOut := cp866ToUTF8(out)
+		// stringDecodeOut := cp866ToUTF8(out)
+		stringDecodeOut, _, err := transform.String(charmap.CodePage866.NewDecoder(), string(out))
+		if err != nil {
+			stringDecodeOut = ""
+		}
+
 		pingTime = parseStringToTime(stringDecodeOut)
 	}
 
@@ -27,16 +33,16 @@ func pingWin(ip string) string {
 	return result
 }
 
-func cp866ToUTF8(out []byte) string {
-	//Инициализируем декодирование с указанным типом CodePage866
-	d := charmap.CodePage866.NewDecoder()
-	//Обрабатываем вывод
-	decodeOut, _ := d.Bytes(out)
-	//Возвращаем обработанный ответ
-	stringDecodeOut := string(decodeOut)
+// func cp866ToUTF8(out []byte) string {
+// 	//Инициализируем декодирование с указанным типом CodePage866
+// 	d := charmap.CodePage866.NewDecoder()
+// 	//Обрабатываем вывод
+// 	decodeOut, _ := d.Bytes(out)
+// 	//Возвращаем обработанный ответ
+// 	stringDecodeOut := string(decodeOut)
 
-	return stringDecodeOut
-}
+// 	return stringDecodeOut
+// }
 
 func parseStringToTime(stringDecodeOut string) string {
 	// Русская вверсия винды
