@@ -13,6 +13,8 @@ var LogPatch string
 
 // Start ...
 func Start(config *Config) error {
+	LogPatch = config.LogPatch
+	// fmt.Println(LogPatch) // DEBUG
 	db, err := newDB(config.DatabaseURL)
 	if err != nil {
 		return err
@@ -23,7 +25,6 @@ func Start(config *Config) error {
 	store := sqlitestore.New(db)
 	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
 	srv := newServer(store, sessionStore)
-	LogPatch = config.LogPatch
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }
