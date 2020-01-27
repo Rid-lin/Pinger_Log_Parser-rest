@@ -135,17 +135,29 @@ func (s *server) handleUpdateDevices() http.HandlerFunc {
 }
 
 func (s *server) handleGetDevice() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO Написать функцию которая отдаёт информацию о конкретном устройстве в JSON
 
-		// var devices [](*model.Device)
-		// devices, err := s.store.Device().GetAllAsList()
-		// if err != nil {
-		// 	s.error(w, r, http.StatusInternalServerError, err)
-		// 	return
-		// }
-		// s.respond(w, r, http.StatusOK, devices)
-	}
+	// type request struct {
+	// 	ID int    `json:"id"`
+	// 	IP string `json:"ip"`
+	// }
+
+	// return func(w http.ResponseWriter, r *http.Request) {
+	// 	req := &request{}
+	// 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+	// 		s.error(w, r, http.StatusBadRequest, err)
+	// 		return
+	// 	}
+
+	// 	d, err := s.store.Device().FindByIP(req.IP)
+
+	// 	if err != nil {
+	// 		s.error(w, r, http.StatusUnprocessableEntity, err)
+	// 		return
+	// 	}
+
+	// 	s.respond(w, r, http.StatusOK, d)
+	// }
+	return func(w http.ResponseWriter, r *http.Request) {}
 }
 
 func (s *server) handleCreateDevice() http.HandlerFunc {
@@ -174,6 +186,7 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 
 		if err := s.store.Device().Create(d); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
 		}
 
 		d.CheckNLogStatus(getFullPatchFile(LogPatch))
@@ -184,19 +197,45 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 }
 
 func (s *server) handleUpdateDevice() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var device (*model.Device)
-		// TODO Написать функцию которая обновляет информацию об устройстве при получении информации в JSON
+	var device (*model.Device)
+	type request struct {
+		ID          int    `json:"id"`
+		IP          string `json:"ip"`
+		Place       string `json:"place"`
+		Description string `json:"description"`
+		MethodCheck string `json:"methodcheck"`
+	}
 
-		// var devices [](*model.Device)
-		// devices, err := s.store.Device().GetAllAsList()
-		// if err != nil {
-		// 	s.error(w, r, http.StatusInternalServerError, err)
-		// 	return
-		// }
-		// s.respond(w, r, http.StatusOK, devices)
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		d := &model.Device{
+			ID:          req.ID,
+			IP:          req.IP,
+			Place:       req.Place,
+			Description: req.Description,
+			MethodCheck: req.MethodCheck,
+		}
+
+		dOld, err := s.store.Device().FindByIP(d.IP)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+		s.store.Device().Update(dOld, d)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
+
 		getFullPatchFile(LogPatch)
 		device.CheckNLogStatus(LogPatch)
+
+		s.respond(w, r, http.StatusOK, d)
 	}
 }
 
@@ -226,6 +265,7 @@ func (s *server) handleDeleteDevice() http.HandlerFunc {
 
 		if err := s.store.Device().Delete(d); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
 		}
 
 		s.respond(w, r, http.StatusOK, d)
@@ -280,6 +320,7 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 		}
 		if err := s.store.User().Create(u); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
 		}
 
 		u.Sanitize()
