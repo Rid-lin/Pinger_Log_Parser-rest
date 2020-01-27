@@ -181,20 +181,6 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 		s.respond(w, r, http.StatusCreated, d)
 	}
 
-	// return func(w http.ResponseWriter, r *http.Request) {
-	// 	var device (*model.Device)
-	// 	// TODO Написать функцию которая создаёт устройство при получении информации в JSON
-
-	// 	// var devices [](*model.Device)
-	// 	// devices, err := s.store.Device().GetAllAsList()
-	// 	// if err != nil {
-	// 	// 	s.error(w, r, http.StatusInternalServerError, err)
-	// 	// 	return
-	// 	// }
-	// 	// s.respond(w, r, http.StatusOK, devices)
-	// 	getFullPatchFile(LogPatch)
-	// 	device.CheckNLogStatus(LogPatch)
-	// }
 }
 
 func (s *server) handleUpdateDevice() http.HandlerFunc {
@@ -215,16 +201,34 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 }
 
 func (s *server) handleDeleteDevice() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// TODO Написать функцию которая удаляет устройство при получении информации в JSON
+	type request struct {
+		ID          int    `json:"id"`
+		IP          string `json:"ip"`
+		Place       string `json:"place"`
+		Description string `json:"description"`
+		MethodCheck string `json:"methodcheck"`
+	}
 
-		// var devices [](*model.Device)
-		// devices, err := s.store.Device().GetAllAsList()
-		// if err != nil {
-		// 	s.error(w, r, http.StatusInternalServerError, err)
-		// 	return
-		// }
-		// s.respond(w, r, http.StatusOK, devices)
+	return func(w http.ResponseWriter, r *http.Request) {
+		req := &request{}
+		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+			s.error(w, r, http.StatusBadRequest, err)
+			return
+		}
+
+		d := &model.Device{
+			ID:          req.ID,
+			IP:          req.IP,
+			Place:       req.Place,
+			Description: req.Description,
+			MethodCheck: req.MethodCheck,
+		}
+
+		if err := s.store.Device().Delete(d); err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+		}
+
+		s.respond(w, r, http.StatusOK, d)
 	}
 }
 

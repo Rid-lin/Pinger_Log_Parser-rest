@@ -153,14 +153,41 @@ func TestServer_HandleSessionsCreate(t *testing.T) {
 
 func TestServer_HandleGetDevices(t *testing.T) {
 	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")))
+	t.Run("GetDevices", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodGet, "/getdevices", nil)
+		s.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+
+}
+
+func TestServer_HandleUpdateDevices(t *testing.T) {
+	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")))
+	t.Run("UpdateDevices", func(t *testing.T) {
+		rec := httptest.NewRecorder()
+		req, _ := http.NewRequest(http.MethodPut, "/updatedevices", nil)
+		s.ServeHTTP(rec, req)
+		assert.Equal(t, http.StatusOK, rec.Code)
+	})
+
+}
+
+func TestServer_HandleCreateDevice(t *testing.T) {
+	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")))
 	testCases := []struct {
 		name        string
 		payload     interface{}
 		excpectCode int
 	}{
 		{
-			name:        "valid",
-			excpectCode: http.StatusOK,
+			name: "valid",
+			payload: map[string]string{
+				"ip":          "127.0.0.1",
+				"place":       "ЧНГКМ",
+				"description": "Описание",
+			},
+			excpectCode: http.StatusCreated,
 		},
 		{
 			name:        "invalid payload",
@@ -181,9 +208,62 @@ func TestServer_HandleGetDevices(t *testing.T) {
 			rec := httptest.NewRecorder()
 			b := &bytes.Buffer{}
 			json.NewEncoder(b).Encode(tc.payload)
-			req, _ := http.NewRequest(http.MethodGet, "/getdevices", b)
+			req, _ := http.NewRequest(http.MethodPost, "/editdevice", b)
 			s.ServeHTTP(rec, req)
 			assert.Equal(t, tc.excpectCode, rec.Code)
 		})
 	}
 }
+
+// func TestServer_HandleDeleteDevice(t *testing.T) {
+// 	s := newServer(teststore.New(), sessions.NewCookieStore([]byte("secret")))
+// 	d := model.TestDevice(t)
+
+// 	testCases := []struct {
+// 		name        string
+// 		payload     interface{}
+// 		excpectCode int
+// 	}{
+// 		{
+// 			name: "valid",
+// 			payload: func() map[string]string {
+// 				return map[string]string{
+// 					"id":          string(d.ID),
+// 					"ip":          d.IP,
+// 					"place":       d.Place,
+// 					"description": d.Description,
+// 					"methodcheck": d.MethodCheck,
+// 				}
+// 			},
+// 			excpectCode: http.StatusOK,
+// 		},
+// 		{
+// 			name:        "invalid payload",
+// 			payload:     "invalid",
+// 			excpectCode: http.StatusBadRequest,
+// 		},
+// 		{
+// 			name: "invalid params",
+// 			payload: map[string]string{
+// 				"ip":          "invalid",
+// 				"place":       "invalid",
+// 				"description": "invalid",
+// 				"methodcheck": "invalid",
+// 			},
+// 			excpectCode: http.StatusBadRequest,
+// 		},
+// 	}
+
+// 	for _, tc := range testCases {
+// 		t.Run(tc.name, func(t *testing.T) {
+// 			_ = s.store.Device().Create(d)
+// 			rec := httptest.NewRecorder()
+// 			b := &bytes.Buffer{}
+// 			json.NewEncoder(b).Encode(tc.payload)
+// 			fmt.Printf("%v\n", string(b.Bytes()))
+// 			req, _ := http.NewRequest(http.MethodDelete, "/editdevice", b)
+// 			s.ServeHTTP(rec, req)
+// 			assert.Equal(t, tc.excpectCode, rec.Code)
+// 		})
+// 	}
+// }
