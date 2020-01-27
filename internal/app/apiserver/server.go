@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"path/filepath"
+	"fmt"
 	"time"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
@@ -129,7 +129,7 @@ func (s *server) handleUpdateDevices() http.HandlerFunc {
 	// опрашивает все devices и и обновляет информацию о доступности (статус)
 	devicesList, _ := s.store.Device().GetAllAsList()
 	for _, device := range devicesList {
-		device.CheckNLogStatus(getFileFullPatch(LogPatch))
+		device.CheckNLogStatus(getFullPatchFile(LogPatch))
 	}
 	return s.handleGetDevices()
 }
@@ -176,8 +176,7 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 		}
 
-		getFileFullPatch(LogPatch)
-		d.CheckNLogStatus(LogPatch)
+		d.CheckNLogStatus(getFullPatchFile(LogPatch))
 
 		s.respond(w, r, http.StatusCreated, d)
 	}
@@ -193,7 +192,7 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 	// 	// 	return
 	// 	// }
 	// 	// s.respond(w, r, http.StatusOK, devices)
-	// 	getFileFullPatch(LogPatch)
+	// 	getFullPatchFile(LogPatch)
 	// 	device.CheckNLogStatus(LogPatch)
 	// }
 }
@@ -210,7 +209,7 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 		// 	return
 		// }
 		// s.respond(w, r, http.StatusOK, devices)
-		getFileFullPatch(LogPatch)
+		getFullPatchFile(LogPatch)
 		device.CheckNLogStatus(LogPatch)
 	}
 }
@@ -331,9 +330,9 @@ func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data 
 	}
 }
 
-func getFileFullPatch(logPatch string) string {
+func getFullPatchFile(logPatch string) string {
 	dateNow := time.Now().Format("2006_01_02")
-	filename := dateNow + ".csv"
-	logPatch = filepath.Join(logPatch, filename)
-	return logPatch
+	filename := fmt.Sprintf("%s/%s.csv", logPatch, dateNow)
+	// fmt.Printf("%s", filename) //DEBUG
+	return filename
 }
