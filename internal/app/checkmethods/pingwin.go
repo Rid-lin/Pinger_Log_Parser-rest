@@ -39,12 +39,10 @@ func cp866ToUTF8(out []byte) string {
 }
 
 func parseStringToTime(stringDecodeOut string) string {
-	fmt.Println(stringDecodeOut)
-
 	// Русская вверсия винды
 	if strings.Contains(stringDecodeOut, "Среднее") {
 		indexStr := strings.Index(stringDecodeOut, "Среднее")
-		pingTime := stringDecodeOut[indexStr+17 : len(stringDecodeOut)-10]
+		pingTime := stringDecodeOut[indexStr+17 : len(stringDecodeOut)-11]
 
 		return pingTime
 
