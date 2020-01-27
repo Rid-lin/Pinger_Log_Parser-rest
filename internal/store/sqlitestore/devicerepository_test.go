@@ -100,6 +100,7 @@ func TestDeviceRepository_Update(t *testing.T) {
 
 	d2 := model.TestDevice2(t)
 	s.Device().Create(d2)
+	d2.ID = d.ID
 
 	err2 := s.Device().Update(d, d2)
 	assert.NoError(t, err2)
