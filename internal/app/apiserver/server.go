@@ -407,6 +407,6 @@ func (s *server) periodicCheck(timeoutCheck int) {
 				err.Error(),
 			)
 		}
-		time.Sleep(time.Duration(timeoutCheck) * 10000000)
+		time.Sleep(time.Duration(timeoutCheck) * time.Second)
 	}
 }
