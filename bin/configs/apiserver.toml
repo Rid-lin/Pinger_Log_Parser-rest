@@ -1,6 +1,6 @@
 bind_addr = ":8080"
 log_level = "debug"
-database_url = "D:/Go/src/plp_spa/apiserver.db"
+database_url = "apiserver.db"
 session_key = "ianafinfprnafrbfsva;poe;fjai;ofnabhfvaivbfgawgcfyefwieukfhlwehfliuhfygfawerahincaoiwe"
-log_path = "D:/Go/src/plp_spa/logs"
+log_path = "logs"
 timeout_check = 300

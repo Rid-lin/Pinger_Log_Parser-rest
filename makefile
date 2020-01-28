@@ -26,6 +26,6 @@ pack:
 deploy_win:
 	copy .\apiserver.exe bin\apiserver.exe /Y
 	if not exist bin\configs mkdir bin\configs 
-	copy configs\apiserver.toml bin\configs\apiserver.toml /Y
+	copy configs\apiserver.toml bin\configs\apiserver.toml /-Y
 	if not exist bin\logs mkdir bin\logs
 	copy apiserver.db bin\apiserver.db /Y
