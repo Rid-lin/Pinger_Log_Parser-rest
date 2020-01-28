@@ -257,7 +257,7 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 
 func (s *server) handleDeleteDevice() http.HandlerFunc {
 	type request struct {
-		ID          int    `json:"id"`
+		ID          int    `json:"id,string"`
 		IP          string `json:"ip"`
 		Place       string `json:"place"`
 		Description string `json:"description"`

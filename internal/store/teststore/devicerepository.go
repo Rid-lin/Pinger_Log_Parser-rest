@@ -63,9 +63,17 @@ func (r *DeviceRepository) DeleteByIP(ip string) error {
 
 //Delete ..
 func (r *DeviceRepository) Delete(d *model.Device) error {
-	delete(r.devices, d.ID)
-
-	return store.ErrRecordNotFound
+	d2, err := r.Find(d.ID)
+	if err != nil {
+		d2, err = r.FindByIP(d.IP)
+		if err != nil {
+			return store.ErrRecordNotFound
+		}
+		delete(r.devices, d2.ID)
+		return nil
+	}
+	delete(r.devices, d2.ID)
+	return nil
 }
 
 //Update ..
