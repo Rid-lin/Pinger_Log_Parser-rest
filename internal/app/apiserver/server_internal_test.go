@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
@@ -159,6 +160,99 @@ func TestServer_HandleGetDevices(t *testing.T) {
 		s.ServeHTTP(rec, req)
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
+
+}
+
+func TestServer_HandleGetDevice(t *testing.T) {
+	store := teststore.New()
+
+	d := model.TestDevice(t)
+	store.Device().Create(d)
+	srtID := strconv.Itoa(d.ID)
+
+	d2 := model.TestDevice2(t)
+	store.Device().Create(d2)
+
+	s := newServer(store, sessions.NewCookieStore([]byte("secret")))
+	testCases := []struct {
+		name        string
+		payload     interface{}
+		excpectCode int
+	}{
+		{
+			name: "valid - two parameter",
+			payload: map[string]string{
+				"ip": d.IP,
+				"id": srtID,
+			},
+			excpectCode: http.StatusOK,
+		},
+		{
+			name: "valid - two parameter with diferent device",
+			payload: map[string]string{
+				"ip": d2.IP,
+				"id": srtID,
+			},
+			excpectCode: http.StatusOK,
+		},
+		{
+			name: "valid - only ip",
+			payload: map[string]string{
+				"ip": d.IP,
+			},
+			excpectCode: http.StatusOK,
+		},
+		{
+			name: "valid - only id",
+			payload: map[string]string{
+				"id": srtID,
+			},
+			excpectCode: http.StatusOK,
+		},
+		{
+			name:        "invalid params - empty headers",
+			payload:     map[string]string{},
+			excpectCode: http.StatusBadRequest,
+		},
+		{
+			name:        "invalid params - invalid headers",
+			payload:     map[string]string{"invalid": "invalid"},
+			excpectCode: http.StatusBadRequest,
+		},
+		{
+			name: "invalid params - not existed ID",
+			payload: map[string]string{
+				"id": "99999999999999999999"},
+			excpectCode: http.StatusBadRequest,
+		},
+		{
+			name: "invalid params - invalid IP",
+			payload: map[string]string{
+				"ip": "invalid"},
+			excpectCode: http.StatusUnprocessableEntity,
+		},
+		{
+			name: "invalid params - invalid ID",
+			payload: map[string]string{
+				"id": "invalid"},
+			excpectCode: http.StatusBadRequest,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			rec := httptest.NewRecorder()
+			headers := make(map[string]string)
+			headers = tc.payload.(map[string]string)
+			req, _ := http.NewRequest(http.MethodGet, "/editdevice", nil)
+			for key, val := range headers {
+				req.Header.Set(key, val)
+				fmt.Println(key, val, d.ID, d.IP)
+			}
+			s.ServeHTTP(rec, req)
+			assert.Equal(t, tc.excpectCode, rec.Code)
+		})
+	}
 
 }
 
