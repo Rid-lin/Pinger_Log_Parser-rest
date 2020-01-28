@@ -157,12 +157,15 @@ func (s *server) handleGetDevices() http.HandlerFunc {
 }
 
 func (s *server) handleUpdateDevices() http.HandlerFunc {
-	// опрашивает все devices и и обновляет информацию о доступности (статус)
-	devicesList, _ := s.store.Device().GetAllAsList()
-	for _, device := range devicesList {
-		device.CheckNLogStatus(getFullPatchFile(LogPatch))
+	return func(w http.ResponseWriter, r *http.Request) {
+		devicesList, _ := s.store.Device().GetAllAsList()
+		for _, device := range devicesList {
+			go device.CheckNLogStatus(getFullPatchFile(LogPatch))
+		}
+
+		s.respond(w, r, http.StatusOK, nil)
 	}
-	return s.handleGetDevices()
+
 }
 
 func (s *server) handleGetDevice() http.HandlerFunc {
@@ -220,7 +223,7 @@ func (s *server) handleCreateDevice() http.HandlerFunc {
 			return
 		}
 
-		d.CheckNLogStatus(getFullPatchFile(LogPatch))
+		go d.CheckNLogStatus(getFullPatchFile(LogPatch))
 
 		s.respond(w, r, http.StatusCreated, d)
 	}
@@ -251,7 +254,7 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 			MethodCheck: req.MethodCheck,
 		}
 
-		dOld, err := s.store.Device().FindByIP(d.IP)
+		dOld, err := s.store.Device().Find(d.ID)
 		if err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
@@ -262,7 +265,7 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 			return
 		}
 
-		d.CheckNLogStatus(getFullPatchFile(LogPatch))
+		go d.CheckNLogStatus(getFullPatchFile(LogPatch))
 
 		s.respond(w, r, http.StatusOK, d)
 	}
