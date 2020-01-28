@@ -1,11 +1,13 @@
 package model
 
 import (
+	"log"
+	"os"
+
 	check "github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/checkmethods" //.
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
-	"log"
-	"os"
+	"github.com/sirupsen/logrus"
 )
 
 //Device ...
@@ -41,9 +43,9 @@ func (d *Device) BeforeCreate() error {
 // CheckNLogStatus ...
 func (d *Device) CheckNLogStatus(patchWorkLogs string) {
 	// Проверка статуса одного устройства
-	status := d.CheckStatus()
+	// status := d.CheckStatus()
 	// Логирование результата
-	d.LogStatus(status, patchWorkLogs)
+	d.LogStatus(d.CheckStatus(), patchWorkLogs)
 }
 
 // CheckStatus ...
@@ -61,12 +63,17 @@ func (d *Device) CheckStatus() string {
 
 // LogStatus добавляет полученную строку "status" в файл находящийся по пути "patchWorkLogs"
 func (d *Device) LogStatus(status, patchWorkLogs string) {
-	// f, err := os.OpenFile(patchWorkLogs, os.O_APPEND|os.O_WRONLY, 0600)
-	f, err := os.OpenFile(patchWorkLogs, os.O_CREATE|os.O_WRONLY, 0600)
+	f, err := os.OpenFile(patchWorkLogs, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 
 	if err != nil {
-		log.Fatal(err)
+		logrus.StandardLogger().Logf(
+			logrus.ErrorLevel,
+			"error write file %s : %v",
+			patchWorkLogs,
+			err.Error(),
+		)
 	}
+
 	defer f.Close()
 
 	if _, err = f.WriteString(status); err != nil {
