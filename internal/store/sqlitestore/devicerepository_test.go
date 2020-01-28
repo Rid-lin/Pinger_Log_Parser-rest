@@ -36,14 +36,17 @@ func TestDeviceRepository_FindByIP(t *testing.T) {
 
 }
 
-func TestDeviceRepository_FindIDByIP(t *testing.T) {
+func TestDeviceRepository_Find(t *testing.T) {
 	db, teardown := sqlitestore.TestDB(t, databaseURL)
 	defer teardown("devices")
 
 	s := sqlitestore.New(db)
 	u1 := model.TestDevice(t)
+	_, err := s.Device().Find(u1.ID)
+	assert.EqualError(t, err, store.ErrRecordNotFound.Error())
+
 	s.Device().Create(u1)
-	u2, err := s.Device().FindIDByIP(u1.IP)
+	u2, err := s.Device().Find(u1.ID)
 	assert.NoError(t, err)
 	assert.NotNil(t, u2)
 

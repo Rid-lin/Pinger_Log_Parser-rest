@@ -64,26 +64,29 @@ func (r *DeviceRepository) FindByIP(ip string) (*model.Device, error) {
 	return d, nil
 }
 
-//FindIDByIP ..
-func (r *DeviceRepository) FindIDByIP(ip string) (int, error) {
+//Find ..
+func (r *DeviceRepository) Find(id int) (*model.Device, error) {
 	d := &model.Device{}
 	if err := r.store.db.QueryRow(
-		"SELECT id, methodcheck FROM devices WHERE ip = ?",
-		ip,
+		"SELECT id, ip, place, description, methodcheck FROM devices WHERE id = ?",
+		id,
 	).Scan(
 		&d.ID,
+		&d.IP,
+		&d.Place,
+		&d.Description,
 		&d.MethodCheck,
 	); err != nil {
 		if err == sql.ErrNoRows {
-			return -1, store.ErrRecordNotFound
+			return nil, store.ErrRecordNotFound
 		}
 	}
-	return d.ID, nil
+	return d, nil
 }
 
 //DeleteByIP ..
 func (r *DeviceRepository) DeleteByIP(ip string) error {
-	id, err := r.FindIDByIP(ip)
+	d, err := r.FindByIP(ip)
 	if err != nil {
 		return err
 	}
@@ -95,7 +98,7 @@ func (r *DeviceRepository) DeleteByIP(ip string) error {
 		panic(err)
 	}
 	defer stmt.Close()
-	_, err2 := stmt.Exec(id)
+	_, err2 := stmt.Exec(d.ID)
 	if err2 != nil {
 		return err2
 	}
@@ -144,7 +147,7 @@ func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
 
 //UpdateByIP ...
 func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
-	id, err := r.FindIDByIP(ip)
+	d, err := r.FindByIP(ip)
 	if err != nil {
 		return err
 	}
@@ -152,7 +155,7 @@ func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
 	// обновляем строку с id=1
 	_, err2 := r.store.db.Exec(
 		"UPDATE devices SET ip = ?, place = ?, description = ?, methodcheck = ? WHERE id = ?",
-		dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck, id)
+		dNew.IP, dNew.Place, dNew.Description, dNew.MethodCheck, d.ID)
 	if err2 != nil {
 		return err2
 	}

@@ -14,10 +14,9 @@ type DeviceRepository interface {
 	Create(*model.Device) error
 	Delete(*model.Device) error
 	Update(*model.Device, *model.Device) error
-	// Check(*model.Device) error
+	Find(int) (*model.Device, error)
 
 	FindByIP(string) (*model.Device, error)
-	FindIDByIP(string) (int, error)
 	DeleteByIP(string) error
 	UpdateByIP(string, *model.Device) error
 
