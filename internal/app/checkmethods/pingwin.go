@@ -28,7 +28,7 @@ func pingWin(ip string) string {
 		pingTime = parseStringToTime(stringDecodeOut)
 	}
 
-	result := fmt.Sprintf("%s,%s,%s", tm, ip, pingTime)
+	result := fmt.Sprintf("%s,%s,%s\n", tm, ip, pingTime)
 
 	return result
 }
