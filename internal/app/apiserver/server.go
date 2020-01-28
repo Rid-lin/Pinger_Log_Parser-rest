@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Rid-lin/Pinger_Log_Parser-rest/internal/app/model"
@@ -150,28 +151,31 @@ func (s *server) handleUpdateDevices() http.HandlerFunc {
 
 func (s *server) handleGetDevice() http.HandlerFunc {
 
-	// type request struct {
-	// 	ID int    `json:"id"`
-	// 	IP string `json:"ip"`
-	// }
+	return func(w http.ResponseWriter, r *http.Request) {
+		d := &model.Device{}
+		var err error
+		ip := r.Header.Get("ip")
+		strID := r.Header.Get("id")
+		id, err2 := strconv.Atoi(strID)
+		if err2 != nil && ip == "" {
+			s.respond(w, r, http.StatusBadRequest, nil)
+			return
+		}
 
-	// return func(w http.ResponseWriter, r *http.Request) {
-	// 	req := &request{}
-	// 	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
-	// 		s.error(w, r, http.StatusBadRequest, err)
-	// 		return
-	// 	}
+		if ip != "" && err2 != nil {
+			d, err = s.store.Device().FindByIP(ip)
+		} else {
+			d, err = s.store.Device().Find(id)
+		}
 
-	// 	d, err := s.store.Device().FindByIP(req.IP)
+		if err != nil {
+			s.error(w, r, http.StatusUnprocessableEntity, err)
+			return
+		}
 
-	// 	if err != nil {
-	// 		s.error(w, r, http.StatusUnprocessableEntity, err)
-	// 		return
-	// 	}
-
-	// 	s.respond(w, r, http.StatusOK, d)
-	// }
-	return func(w http.ResponseWriter, r *http.Request) {}
+		s.respond(w, r, http.StatusOK, d)
+		return
+	}
 }
 
 func (s *server) handleCreateDevice() http.HandlerFunc {
