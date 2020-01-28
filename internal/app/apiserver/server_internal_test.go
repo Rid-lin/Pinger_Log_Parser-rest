@@ -247,7 +247,6 @@ func TestServer_HandleGetDevice(t *testing.T) {
 			req, _ := http.NewRequest(http.MethodGet, "/editdevice", nil)
 			for key, val := range headers {
 				req.Header.Set(key, val)
-				fmt.Println(key, val, d.ID, d.IP)
 			}
 			s.ServeHTTP(rec, req)
 			assert.Equal(t, tc.excpectCode, rec.Code)
