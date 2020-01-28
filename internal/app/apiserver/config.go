@@ -2,18 +2,20 @@ package apiserver
 
 //Config ...
 type Config struct {
-	BindAddr    string `toml:"bind_addr"`
-	LogLevel    string `toml:"log_level"`
-	DatabaseURL string `toml:"database_url"`
-	SessionKey  string `toml:"session_key"`
-	LogPatch    string `toml:"log_path"`
+	BindAddr     string `toml:"bind_addr"`
+	LogLevel     string `toml:"log_level"`
+	DatabaseURL  string `toml:"database_url"`
+	SessionKey   string `toml:"session_key"`
+	LogPatch     string `toml:"log_path"`
+	TimeoutCheck int    `toml:"timeout_check"`
 }
 
 //NewConfig ...
 func NewConfig() *Config {
 	return &Config{
-		BindAddr: ":8080",
-		LogLevel: "debug",
-		LogPatch: "logs",
+		BindAddr:     ":8080",
+		LogLevel:     "debug",
+		LogPatch:     "logs",
+		TimeoutCheck: 300,
 	}
 }

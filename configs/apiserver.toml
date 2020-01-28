@@ -3,3 +3,4 @@ log_level = "debug"
 database_url = "D:/Go/src/plp_spa/apiserver.db"
 session_key = "ianafinfprnafrbfsva;poe;fjai;ofnabhfvaivbfgawgcfyefwieukfhlwehfliuhfygfawerahincaoiwe"
 log_path = "D:/Go/src/plp_spa/logs"
+timeout_check = 300

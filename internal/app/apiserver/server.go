@@ -390,6 +390,23 @@ func (s *server) respond(w http.ResponseWriter, r *http.Request, code int, data 
 func getFullPatchFile(logPatch string) string {
 	dateNow := time.Now().Format("2006_01_02")
 	filename := fmt.Sprintf("%s/%s.csv", logPatch, dateNow)
-	// fmt.Printf("%s", filename) //DEBUG
 	return filename
+}
+
+func (s *server) periodicCheck(timeoutCheck int) {
+	for {
+		devicesList, err := s.store.Device().GetAllAsList()
+		if err == nil {
+			for _, device := range devicesList {
+				go device.CheckNLogStatus(getFullPatchFile(LogPatch))
+			}
+		} else {
+			logrus.StandardLogger().Logf(
+				logrus.ErrorLevel,
+				"error get list of devices : %v",
+				err.Error(),
+			)
+		}
+		time.Sleep(time.Duration(timeoutCheck) * 10000000)
+	}
 }

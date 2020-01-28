@@ -14,7 +14,6 @@ var LogPatch string
 // Start ...
 func Start(config *Config) error {
 	LogPatch = config.LogPatch
-	// fmt.Println(LogPatch) // DEBUG
 	db, err := newDB(config.DatabaseURL)
 	if err != nil {
 		return err
@@ -25,6 +24,8 @@ func Start(config *Config) error {
 	store := sqlitestore.New(db)
 	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
 	srv := newServer(store, sessionStore)
+
+	go srv.periodicCheck(config.TimeoutCheck)
 
 	return http.ListenAndServe(config.BindAddr, srv)
 }
@@ -40,33 +41,3 @@ func newDB(databaseURL string) (*sql.DB, error) {
 
 	return db, nil
 }
-
-// func (s *APIServer) configureLogger() error {
-// 	level, err := logrus.ParseLevel(s.config.LogLevel)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	s.logger.SetLevel(level)
-// 	return nil
-// }
-
-// func (s *APIServer) configureRouter() {
-// 	s.router.HandleFunc("/hello", s.handleHello())
-// }
-
-// func (s *APIServer) configureStore() error {
-// 	st := store.New(s.config.Store)
-// 	if err := st.Open(); err != nil {
-// 		return err
-// 	}
-
-// 	s.store = st
-
-// 	return nil
-// }
-
-// func (s *APIServer) handleHello() http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		io.WriteString(w, "Hello")
-// 	}
-// }
