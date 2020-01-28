@@ -39,14 +39,14 @@ func (r *DeviceRepository) FindByIP(ip string) (*model.Device, error) {
 	return nil, store.ErrRecordNotFound
 }
 
-//FindIDByIP ..
-func (r *DeviceRepository) FindIDByIP(ip string) (int, error) {
+//Find ..
+func (r *DeviceRepository) Find(id int) (*model.Device, error) {
 	for _, d := range r.devices {
-		if d.IP == ip {
-			return d.ID, nil
+		if d.ID == id {
+			return d, nil
 		}
 	}
-	return -1, store.ErrRecordNotFound
+	return nil, store.ErrRecordNotFound
 }
 
 //DeleteByIP ..
@@ -83,12 +83,12 @@ func (r *DeviceRepository) Update(dOld, dNew *model.Device) error {
 
 //UpdateByIP ..
 func (r *DeviceRepository) UpdateByIP(ip string, dNew *model.Device) error {
-	id, err := r.FindIDByIP(ip)
+	d, err := r.FindByIP(ip)
 	if err != nil {
 		return err
 	}
 
-	r.devices[id] = dNew
+	r.devices[d.ID] = dNew
 
 	return nil
 }
