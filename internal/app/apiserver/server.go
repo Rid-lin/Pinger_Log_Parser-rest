@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"os"
 	"strconv"
 	"time"
 
@@ -75,6 +77,9 @@ func (s *server) configureRouter() {
 	private := s.router.PathPrefix("/private").Subrouter()
 	private.Use(s.authenticateUser)
 	private.HandleFunc("/whoami", s.handleWhoami()).Methods("GET")
+
+	// для отдачи сервером статичных файлов из папки web
+	s.router.PathPrefix("/web/").Handler(http.StripPrefix("/web/", http.FileServer(http.Dir("./web"))))
 }
 
 func (s *server) setRequestID(next http.Handler) http.Handler {
@@ -121,6 +126,29 @@ func (s *server) handleIndex() http.HandlerFunc {
 		// w.Header().Set("Content-Type", "application/json")
 		// json.NewEncoder(w).Encode(tos.ServersList)
 		// TODO тут нужно отдать index.html как статичную страницу, в которой будет логика по дальнейшей работе приложения
+		f, err := os.OpenFile("D:/Go/src/plp_spa/web/index.html", os.O_RDONLY, 0600)
+
+		if err != nil {
+			logrus.StandardLogger().Logf(
+				logrus.ErrorLevel,
+				"error write file %s : %v",
+				"web/index.html",
+				err.Error(),
+			)
+		}
+
+		defer f.Close()
+
+		data := make([]byte, 64)
+
+		for {
+			n, err := f.Read(data)
+			if err == io.EOF { // если конец файла
+				break // выходим из цикла
+			}
+			// fmt.Print(string(data[:n]))
+			fmt.Fprintf(w, string(data[:n]))
+		}
 	}
 }
 
