@@ -271,8 +271,8 @@ func (s *server) handleUpdateDevice() http.HandlerFunc {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
-		s.store.Device().Update(dOld, d)
-		if err != nil {
+		err2 := s.store.Device().Update(dOld, d)
+		if err2 != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
